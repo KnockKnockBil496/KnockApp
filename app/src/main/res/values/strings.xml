@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">KnockKnockApp</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">KnockKnock</string>
+    <string name="viewhistory">Misafirleri Görüntüle</string>
 </resources>
