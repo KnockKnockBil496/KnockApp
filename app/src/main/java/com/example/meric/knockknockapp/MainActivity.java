@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int Camera_Req = 9999;
     Button addNew1;
+    Button setMailBtn;
     ImageView foto;
 
     @Override
@@ -47,6 +48,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Email adresini set edebilmek icin yeni bir aktivite baslatir.
+        setMailBtn = (Button) findViewById(R.id.setEmail);
+        setMailBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setEmailFunc();
+            }
+        });
+    }
+
+    public void setEmailFunc() {
+        Intent emailSetter = new Intent(this, SetMailActivity.class);
+        startActivity(emailSetter);
     }
 
     @Override
