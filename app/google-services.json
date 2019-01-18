@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "512653739540",
+    "firebase_url": "https://knockapp-bf55d.firebaseio.com",
+    "project_id": "knockapp-bf55d",
+    "storage_bucket": "knockapp-bf55d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:512653739540:android:246c1c80db203bda",
+        "android_client_info": {
+          "package_name": "com.example.meric.knockknockapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "512653739540-c6tqcv53pelr804ekrr97ae3lh1gacld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDm8-7q0ZEgGKJzFxpbnyO7brNSzjrDpqE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
