@@ -88,6 +88,24 @@
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteY="446dp" />
 
+        <Button
+            android:id="@+id/textToSpeech"
+            android:layout_width="398dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/shape"
+            android:text="Text To Speech"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:typeface="sans"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteY="446dp" />
+
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="164dp"
