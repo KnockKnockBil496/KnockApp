@@ -30,4 +30,5 @@ dependencies {
     // implementation project(':OpenCVLibrary2411')
     implementation project(':openCVLibrary2411')
     implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation project(':openCVLibrary2411')
 }

@@ -1,5 +1,6 @@
 package com.example.meric.knockknockapp;
 
+//import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -12,10 +13,13 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+//import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static String emailAdress;
     public static final int Camera_Req = 9999;
     Button addNew1;
     Button setMailBtn;
@@ -43,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
         addNew1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent kamera=new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
-                startActivityForResult(kamera,Camera_Req);
+                Intent kamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
+                startActivityForResult(kamera, Camera_Req);
             }
         });
 
