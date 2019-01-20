@@ -13,30 +13,13 @@
         android:layout_height="0dip"
         android:layout_weight="1"
         android:gravity="center|bottom"
-        android:orientation="vertical" >
-
-        <Button
-            android:id="@+id/Button"
-            android:layout_width="398dp"
-            android:layout_height="57dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:background="@drawable/shape"
-            android:text="Button"
-            android:textAllCaps="true"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            android:typeface="sans"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="3dp" />
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="95dp">
 
         <Button
             android:id="@+id/addNew"
-            android:layout_width="398dp"
+            android:layout_width="194dp"
             android:layout_height="57dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
@@ -55,8 +38,8 @@
 
         <Button
             android:id="@+id/viewhistory"
-            android:layout_width="398dp"
-            android:layout_height="70dp"
+            android:layout_width="201dp"
+            android:layout_height="117dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="10dp"
@@ -70,10 +53,11 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteY="446dp" />
+
         <Button
             android:id="@+id/setEmail"
-            android:layout_width="398dp"
-            android:layout_height="70dp"
+            android:layout_width="200dp"
+            android:layout_height="86dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="10dp"
@@ -117,6 +101,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@mipmap/ic_launcher"
             tools:layout_editor_absoluteX="7dp" />
+
+        <Button
+            android:id="@+id/videoCamera"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/oval"
+            android:drawableTop="@drawable/videocam"
+            android:padding="8dp" />
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
