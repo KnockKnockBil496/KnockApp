@@ -6,12 +6,9 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-<<<<<<< HEAD
 import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-=======
->>>>>>> 22af277d6b542d796dfa84c3b610bcef79162e5e
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -29,6 +26,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static String emailAdress;
     public static final int Camera_Req = 9999;
     public static final int GALERY_INTENT = 2;
     private static final int OPEN_CAMERA = 1;
