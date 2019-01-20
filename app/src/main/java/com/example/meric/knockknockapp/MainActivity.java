@@ -3,7 +3,9 @@ package com.example.meric.knockknockapp;
 //import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,15 +17,21 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 //import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     public static String emailAdress;
-    public static final int Camera_Req = 9999;
     Button addNew1;
     Button setMailBtn;
-    ImageView foto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,14 +49,13 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });*/
-        foto = findViewById(R.id.imageView);
-        addNew1 = findViewById(R.id.addNew);
 
+        //Yeni kişi ekleyebileceği sayfayı açar
+        addNew1 = findViewById(R.id.addNew);
         addNew1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent kamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
-                startActivityForResult(kamera, Camera_Req);
+                addNewFunc();
             }
         });
 
@@ -62,23 +69,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void addNewFunc(){
+        startActivity(new Intent(MainActivity.this,AddNewActivity.class));
+    }
+
     public void setEmailFunc() {
         Intent emailSetter = new Intent(this, SetMailActivity.class);
         startActivity(emailSetter);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        super.onActivityResult(requestCode,resultCode,data);
-        if(requestCode==Camera_Req){
-            Bitmap image=(Bitmap)data.getExtras().get("data");//Çekilen resim id olarak bitmap şeklinde alındı ve imageview'e atandı
-            foto.setImageBitmap(image);
-        }
-
-
-        // super.onActivityResult(requestCode, resultCode, data);
-    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
