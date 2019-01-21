@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +18,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
+//import android.widget.Toast;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -24,20 +33,22 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.Locale;
 
+
 public class MainActivity extends AppCompatActivity {
 
     public static String emailAdress;
+    Button addNew1;
+    Button setMailBtn;
     public static final int Camera_Req = 9999;
     public static final int GALERY_INTENT = 2;
     private static final int OPEN_CAMERA = 1;
     public boolean uploadDone = false;
-    Button addNew1;
-    Button setMailBtn;
     Button mSelectImage;
     Button watchPeople;
     ImageView foto;
     StorageReference mStorage;
     ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,14 +65,13 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });*/
-        foto = findViewById(R.id.imageView);
-        addNew1 = findViewById(R.id.addNew);
 
+        //Yeni kişi ekleyebileceği sayfayı açar
+        addNew1 = findViewById(R.id.addNew);
         addNew1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent kamera=new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
-                startActivityForResult(kamera,Camera_Req);
+                addNewFunc();
             }
         });
 
@@ -98,6 +108,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, OPEN_CAMERA);
             }
         });
+    }
+
+    public void addNewFunc(){
+        startActivity(new Intent(MainActivity.this,AddNewActivity.class));
     }
 
     public void setEmailFunc() {
@@ -143,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
