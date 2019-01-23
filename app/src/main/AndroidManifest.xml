@@ -24,6 +24,7 @@
         </activity>
         <activity android:name=".SetMailActivity"></activity>
         <activity android:name=".AddNewActivity"></activity>
+        <activity android:name="TextToSpeechActivity"></activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

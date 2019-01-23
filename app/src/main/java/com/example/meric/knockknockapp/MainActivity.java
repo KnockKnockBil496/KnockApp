@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     public void addNewFunc(){
         startActivity(new Intent(MainActivity.this,AddNewActivity.class));
     }
@@ -126,6 +127,12 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode==Camera_Req){
             Bitmap image=(Bitmap)data.getExtras().get("data");//Çekilen resim id olarak bitmap şeklinde alındı ve imageview'e atandı
             foto.setImageBitmap(image);
+
+            /*
+             BURDA 'FOTO' KULLANMA ACTIVITY MAIN'E YENİ BİR IMAGE VIEW EKLE
+             ('FOTO' ACTIVITY_ADD_NEW.XML'DE  )
+
+             */
 
         }
 
@@ -146,16 +153,7 @@ public class MainActivity extends AppCompatActivity {
             });
             uploadDone = true;
         }
-
-
         // super.onActivityResult(requestCode, resultCode, data);
-
-
-
-
-
-
-
     }
 
     @Override
