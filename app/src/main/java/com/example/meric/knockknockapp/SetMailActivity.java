@@ -1,29 +1,17 @@
 package com.example.meric.knockknockapp;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
-import android.os.Message;
-import android.se.omapi.Session;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
-import java.util.Properties;
-
-import javax.mail.MessagingException;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 public class SetMailActivity extends AppCompatActivity {
 
@@ -38,6 +26,10 @@ public class SetMailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_mail);
 
+        ActivityCompat.requestPermissions(SetMailActivity.this,
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                1);
+
         //Yazilan email adresini almaya yarar.
         getMailBtn = (Button) findViewById(R.id.btnEmailSetter);
         getMailBtn.setOnClickListener(new View.OnClickListener() {
@@ -45,15 +37,34 @@ public class SetMailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 getEmailFunc();
                 sendEmail();
-//                MailSend mail = new MailSend(null, "burakshn96@gmail.com", "KnockKnock Deneme", "Merhaba merhaba asdasdasdasd...");
-//                mail.execute();
-//                mai
-//                mail.onPreExecute();
-//                mail.doInBackground();
             }
         });
     }
 
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                } else {
+
+                    // permission denied! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(SetMailActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
     public void getEmailFunc() {
         EditText text = (EditText)findViewById(R.id.textEmailSetter) ;
         MainActivity.emailAdress = text.getText().toString();
@@ -67,7 +78,7 @@ public class SetMailActivity extends AppCompatActivity {
 
     public void sendEmail() {
         //Creating SendMail object
-        MailSend sm = new MailSend(this, "knockknockapplication@gmail.com", "TEST", "TESTEEEEEE");
+        MailSend sm = new MailSend(this, "knockknockapplication@gmail.com", "Knock Knock App Daily Summary", "Here are your visitors today.");
 
         //Executing sendmail to send email
         sm.execute();
