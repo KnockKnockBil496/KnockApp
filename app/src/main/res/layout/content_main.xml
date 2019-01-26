@@ -15,7 +15,8 @@
         android:gravity="center|bottom"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="95dp">
+        tools:layout_editor_absoluteY="95dp"
+        tools:ignore="MissingConstraints">
 
         <Button
             android:id="@+id/addNew"
@@ -89,8 +90,6 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteY="446dp" />
-
-
 
         <Button
             android:id="@+id/videoCamera"

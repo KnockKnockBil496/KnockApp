@@ -36,7 +36,7 @@ import static android.os.Environment.DIRECTORY_DCIM;
     kaydedilir.
  */
 
-public class AddNewActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
+public class AddNewActivity extends AppCompatActivity {
 
     ImageView foto;
     Button captr,cancel;
@@ -52,7 +52,6 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
     private static final int OPEN_CAMERA = 1;
     public boolean uploadDone = false;
     public static final int Camera_Req = 9999;
-    public static boolean save=false;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -77,14 +76,13 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
         kaydet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                save = true;
                 try {
                     createImageFile(dosya.getText().toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                // Toast.makeText(AddNewActivity.this, "Kaydedildi!", Toast.LENGTH_SHORT).show();
-                save = false;
+
             }
         });
 
@@ -103,9 +101,6 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
             Bitmap image=(Bitmap)data.getExtras().get("data");//Çekilen resim id olarak bitmap şeklinde alındı ve imageview'e atandı
              foto.setImageBitmap(image);// fotoğrafı uygulamada gösterir
         }
-
-
-
 
         //çekilen fotoğrafın DB'ye atılması   ?????
        /* if(save == true) {
@@ -185,19 +180,4 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
         foto.setImageBitmap(bitmap);
     }
 
-
-    @Override
-    public void onCameraViewStarted(int width, int height) {
-
-    }
-
-    @Override
-    public void onCameraViewStopped() {
-
-    }
-
-    @Override
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        return null;
-    }
 }//class

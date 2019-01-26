@@ -5,11 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.speech.tts.TextToSpeech;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -18,11 +13,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 
 //import android.widget.Toast;
 
@@ -30,8 +20,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -102,15 +90,17 @@ public class MainActivity extends AppCompatActivity {
         watchPeople.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                // start the image capture Intent
-                startActivityForResult(intent, OPEN_CAMERA);
+                showGuests();
+                /*Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, OPEN_CAMERA);*/
             }
         });
     }
 
 
+    public void showGuests(){
+        startActivity(new Intent(MainActivity.this, WatchPeopleActivity.class));
+    }
     public void addNewFunc(){
         startActivity(new Intent(MainActivity.this,AddNewActivity.class));
     }
@@ -133,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
              ('FOTO' ACTIVITY_ADD_NEW.XML'DE  )
 
              */
-
         }
 
           // photos are downloaded  https://console.firebase.google.com/project/knockapp-bf55d/storage/knockapp-bf55d.appspot.com/files~2FPhotos~2F
