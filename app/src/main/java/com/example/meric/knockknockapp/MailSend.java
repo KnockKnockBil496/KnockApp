@@ -2,26 +2,19 @@ package com.example.meric.knockknockapp;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.util.Config;
 import android.widget.Toast;
-
-import java.util.Date;
 import java.util.Properties;
-
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.Authenticator;
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -37,7 +30,7 @@ public class MailSend extends AsyncTask<Void,Void,Void> {
     //Information to send email
     private String email;
     private String subject;
-    private String message;
+    private String message1;
 
     //Progressdialog to show while sending email
     private ProgressDialog progressDialog;
@@ -48,7 +41,7 @@ public class MailSend extends AsyncTask<Void,Void,Void> {
         this.context = context;
         this.email = email;
         this.subject = subject;
-        this.message = message;
+        this.message1 = message;
     }
 
     @Override
@@ -83,25 +76,39 @@ public class MailSend extends AsyncTask<Void,Void,Void> {
                 new javax.mail.Authenticator() {
                     //Authenticating the password
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication("knockknockapplication@gmail.com", "12341234)a");
+                        return new PasswordAuthentication(username, password);
                     }
                 });
 
         try {
-            //Creating MimeMessage object
-            MimeMessage mm = new MimeMessage(session);
+            MimeMessage message = new MimeMessage(session);
 
-            //Setting sender address
-            mm.setFrom(new InternetAddress("knockknockapplication@gmail.com"));
-            //Adding receiver
-            mm.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
-            //Adding subject
-            mm.setSubject(subject);
-            //Adding message
-            mm.setText(message);
+            message.setFrom(new InternetAddress("knockknockapplication@gmail.com"));
 
-            //Sending email
-            Transport.send(mm);
+            message.setRecipients(Message.RecipientType.TO, email);
+
+            message.setSubject(subject);
+
+            BodyPart messageBodyPart = new MimeBodyPart();
+
+            messageBodyPart.setText(message1);
+
+            Multipart multipart = new MimeMultipart();
+
+            multipart.addBodyPart(messageBodyPart);
+
+            messageBodyPart = new MimeBodyPart();
+
+            String filename = "/storage/emulated/0/DCIM/Camera/1396863284629.jpg";  //change here to, change the file that has been sent
+            DataSource source = new FileDataSource(filename);
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName(filename);
+
+            multipart.addBodyPart(messageBodyPart);
+
+            message.setContent(multipart);
+
+            Transport.send(message);
 
         } catch (MessagingException e) {
             e.printStackTrace();
