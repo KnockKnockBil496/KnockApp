@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
             /*
              BURDA 'FOTO' KULLANMA ACTIVITY MAIN'E YENİ BİR IMAGE VIEW EKLE
              ('FOTO' ACTIVITY_ADD_NEW.XML'DE  )
-
              */
 
         }
@@ -152,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         // photos are downloaded  https://console.firebase.google.com/project/knockapp-bf55d/storage/knockapp-bf55d.appspot.com/files~2FPhotos~2F
         if(requestCode==GALERY_INTENT && resultCode == RESULT_OK && uploadDone == false){
             Uri uri = data.getData();
-
+            // Uri uri = Uri.fromFile(new File(pathArray.get(array_position)));
             mProgressDialog.setMessage("Uploading");
             mProgressDialog.show();
             StorageReference filepath = mStorage.child("Photos/").child(uri.getLastPathSegment());
