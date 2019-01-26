@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -28,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static android.os.Environment.DIRECTORY_DCIM;
+import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 
 /*
@@ -56,7 +58,9 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        mStorage = FirebaseStorage.getInstance().getReference();
         setContentView(R.layout.activity_add_new);
         foto = findViewById(R.id.imageView);//küçük resim olarak gösterildiği yer
         captr = findViewById(R.id.capture);//fotoğraf çekme butonu
@@ -68,7 +72,9 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
         captr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Intent kamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
+
+                Intent kamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
+                Toast.makeText(AddNewActivity.this,"KAmera açıldı!",Toast.LENGTH_LONG).show();
                 startActivityForResult(kamera, Camera_Req);
 
             }
@@ -83,7 +89,7 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-               // Toast.makeText(AddNewActivity.this, "Kaydedildi!", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(AddNewActivity.this, "Kaydedildi!", Toast.LENGTH_SHORT).show();
                 save = false;
             }
         });
@@ -100,8 +106,9 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
 
         super.onActivityResult(requestCode,resultCode,data);
         if(requestCode==Camera_Req){
+
             Bitmap image=(Bitmap)data.getExtras().get("data");//Çekilen resim id olarak bitmap şeklinde alındı ve imageview'e atandı
-             foto.setImageBitmap(image);// fotoğrafı uygulamada gösterir
+            foto.setImageBitmap(image);// fotoğrafı uygulamada gösterir
         }
 
 
@@ -111,7 +118,6 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
        /* if(save == true) {
             if (requestCode == GALERY_INTENT && resultCode == RESULT_OK && uploadDone == false) {
                 Uri uri = data.getData();
-
                 mProgressDialog.setMessage("Uploading");
                 mProgressDialog.show();
                 StorageReference filepath = mStorage.child("Photos/").child(uri.getLastPathSegment());
@@ -151,11 +157,26 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
     }
 
     private void galleryAddPic(String mCurrentPhotoPath) {
-       // setPic();
+        // setPic();
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
+        Uri uri = Uri.fromFile(new File(mCurrentPhotoPath));
         mediaScanIntent.setData(contentUri);
+        mProgressDialog.setMessage("Uploading");
+        mProgressDialog.show();
+        StorageReference filepath = mStorage.child("Photos/").child(uri.getLastPathSegment());
+        filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(AddNewActivity.this,"Upload is Done!",Toast.LENGTH_LONG).show();
+                mProgressDialog.dismiss();
+                uploadDone = true;
+            }
+        });
+
+
+
         this.sendBroadcast(mediaScanIntent);
     }
 
