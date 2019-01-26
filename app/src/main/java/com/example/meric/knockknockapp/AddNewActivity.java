@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -28,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static android.os.Environment.DIRECTORY_DCIM;
+import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 
 /*
@@ -36,7 +38,7 @@ import static android.os.Environment.DIRECTORY_DCIM;
     kaydedilir.
  */
 
-public class AddNewActivity extends AppCompatActivity {
+public class AddNewActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     ImageView foto;
     Button captr,cancel;
@@ -52,10 +54,13 @@ public class AddNewActivity extends AppCompatActivity {
     private static final int OPEN_CAMERA = 1;
     public boolean uploadDone = false;
     public static final int Camera_Req = 9999;
+    public static boolean save=false;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        mStorage = FirebaseStorage.getInstance().getReference();
         setContentView(R.layout.activity_add_new);
         foto = findViewById(R.id.imageView);//küçük resim olarak gösterildiği yer
         captr = findViewById(R.id.capture);//fotoğraf çekme butonu
@@ -67,7 +72,9 @@ public class AddNewActivity extends AppCompatActivity {
         captr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Intent kamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
+
+                Intent kamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
+                Toast.makeText(AddNewActivity.this,"KAmera açıldı!",Toast.LENGTH_LONG).show();
                 startActivityForResult(kamera, Camera_Req);
 
             }
@@ -76,13 +83,14 @@ public class AddNewActivity extends AppCompatActivity {
         kaydet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                save = true;
                 try {
                     createImageFile(dosya.getText().toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-               // Toast.makeText(AddNewActivity.this, "Kaydedildi!", Toast.LENGTH_SHORT).show();
-
+                // Toast.makeText(AddNewActivity.this, "Kaydedildi!", Toast.LENGTH_SHORT).show();
+                save = false;
             }
         });
 
@@ -98,15 +106,18 @@ public class AddNewActivity extends AppCompatActivity {
 
         super.onActivityResult(requestCode,resultCode,data);
         if(requestCode==Camera_Req){
+
             Bitmap image=(Bitmap)data.getExtras().get("data");//Çekilen resim id olarak bitmap şeklinde alındı ve imageview'e atandı
-             foto.setImageBitmap(image);// fotoğrafı uygulamada gösterir
+            foto.setImageBitmap(image);// fotoğrafı uygulamada gösterir
         }
+
+
+
 
         //çekilen fotoğrafın DB'ye atılması   ?????
        /* if(save == true) {
             if (requestCode == GALERY_INTENT && resultCode == RESULT_OK && uploadDone == false) {
                 Uri uri = data.getData();
-
                 mProgressDialog.setMessage("Uploading");
                 mProgressDialog.show();
                 StorageReference filepath = mStorage.child("Photos/").child(uri.getLastPathSegment());
@@ -146,11 +157,26 @@ public class AddNewActivity extends AppCompatActivity {
     }
 
     private void galleryAddPic(String mCurrentPhotoPath) {
-       // setPic();
+        // setPic();
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
+        Uri uri = Uri.fromFile(new File(mCurrentPhotoPath));
         mediaScanIntent.setData(contentUri);
+        mProgressDialog.setMessage("Uploading");
+        mProgressDialog.show();
+        StorageReference filepath = mStorage.child("Photos/").child(uri.getLastPathSegment());
+        filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(AddNewActivity.this,"Upload is Done!",Toast.LENGTH_LONG).show();
+                mProgressDialog.dismiss();
+                uploadDone = true;
+            }
+        });
+
+
+
         this.sendBroadcast(mediaScanIntent);
     }
 
@@ -180,4 +206,19 @@ public class AddNewActivity extends AppCompatActivity {
         foto.setImageBitmap(bitmap);
     }
 
+
+    @Override
+    public void onCameraViewStarted(int width, int height) {
+
+    }
+
+    @Override
+    public void onCameraViewStopped() {
+
+    }
+
+    @Override
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        return null;
+    }
 }//class

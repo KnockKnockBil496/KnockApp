@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean uploadDone = false;
     Button mSelectImage;
     Button watchPeople;
+    Button speechToText;
     ImageView foto;
     StorageReference mStorage;
     ProgressDialog mProgressDialog;
@@ -95,6 +96,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, OPEN_CAMERA);*/
             }
         });
+
+        speechToText = findViewById(R.id.textToSpeech);
+        speechToText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speakNameFunc();
+            }
+        });
     }
 
 
@@ -103,6 +112,10 @@ public class MainActivity extends AppCompatActivity {
     }
     public void addNewFunc(){
         startActivity(new Intent(MainActivity.this,AddNewActivity.class));
+    }
+
+    public void speakNameFunc(){
+        startActivity(new Intent(MainActivity.this,TextToSpeechActivity.class));
     }
 
     public void setEmailFunc() {
@@ -121,14 +134,13 @@ public class MainActivity extends AppCompatActivity {
             /*
              BURDA 'FOTO' KULLANMA ACTIVITY MAIN'E YENİ BİR IMAGE VIEW EKLE
              ('FOTO' ACTIVITY_ADD_NEW.XML'DE  )
-
              */
         }
 
-          // photos are downloaded  https://console.firebase.google.com/project/knockapp-bf55d/storage/knockapp-bf55d.appspot.com/files~2FPhotos~2F
+        // photos are downloaded  https://console.firebase.google.com/project/knockapp-bf55d/storage/knockapp-bf55d.appspot.com/files~2FPhotos~2F
         if(requestCode==GALERY_INTENT && resultCode == RESULT_OK && uploadDone == false){
             Uri uri = data.getData();
-
+            // Uri uri = Uri.fromFile(new File(pathArray.get(array_position)));
             mProgressDialog.setMessage("Uploading");
             mProgressDialog.show();
             StorageReference filepath = mStorage.child("Photos/").child(uri.getLastPathSegment());
