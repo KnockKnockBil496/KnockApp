@@ -108,6 +108,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, OPEN_CAMERA);
             }
         });
+
+        textToSpeech = findViewById(R.id.textToSpeech);
+        textToSpeech.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speakName();
     }
 
 
