@@ -83,7 +83,7 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-               // Toast.makeText(AddNewActivity.this, "Kaydedildi!", Toast.LENGTH_SHORT).show();
+               Toast.makeText(AddNewActivity.this, "Kaydedildi!", Toast.LENGTH_SHORT).show();
                 save = false;
             }
         });

@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean uploadDone = false;
     Button mSelectImage;
     Button watchPeople;
+    Button speechToText;
     ImageView foto;
     StorageReference mStorage;
     ProgressDialog mProgressDialog;
@@ -109,16 +110,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        textToSpeech = findViewById(R.id.textToSpeech);
-        textToSpeech.setOnClickListener(new View.OnClickListener() {
+        speechToText = findViewById(R.id.textToSpeech);
+        speechToText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                speakName();
+                speakNameFunc();
+            }
+        });
     }
 
 
     public void addNewFunc(){
         startActivity(new Intent(MainActivity.this,AddNewActivity.class));
+    }
+
+    public void speakNameFunc(){
+        startActivity(new Intent(MainActivity.this,TextToSpeechActivity.class));
     }
 
     public void setEmailFunc() {
@@ -142,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-          // photos are downloaded  https://console.firebase.google.com/project/knockapp-bf55d/storage/knockapp-bf55d.appspot.com/files~2FPhotos~2F
+        // photos are downloaded  https://console.firebase.google.com/project/knockapp-bf55d/storage/knockapp-bf55d.appspot.com/files~2FPhotos~2F
         if(requestCode==GALERY_INTENT && resultCode == RESULT_OK && uploadDone == false){
             Uri uri = data.getData();
 
