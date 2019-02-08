@@ -93,9 +93,14 @@ public class MainActivity extends AppCompatActivity {
         watchPeople.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showGuests();
+              //  showGuests();
                 /*Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(intent, OPEN_CAMERA);*/
+
+                Intent swap = new Intent(MainActivity.this, RecognizeActivity.class);
+                startActivity(swap);
+
+
             }
         });
 

@@ -88,17 +88,21 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
         cancel = findViewById(R.id.cancel_btn);//yeni kişi ekleme sayfasından çıkılır
 
 
-//        captr.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//
+        captr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
 //                Intent kamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
 //                Toast.makeText(AddNewActivity.this,"Kamera açıldı!",Toast.LENGTH_LONG).show();
 //                startActivityForResult(kamera, Camera_Req);
-//
-//            }
-//        });
+                Intent swap = new Intent(AddNewActivity.this, TrainActivity.class);
+                startActivity(swap);
+
+
+
+            }
+        });
 
         kaydet.setOnClickListener(new View.OnClickListener() {
             @Override
