@@ -4,7 +4,7 @@
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"><![CDATA[
 
 
     android:layout_width="395dp"
@@ -14,34 +14,31 @@
     tools:layout_editor_absoluteY="8dp">
 
 
-    <org.opencv.android.JavaCameraView
-        android:id="@+id/camera"
-        android:layout_width="fill_parent"
-        android:layout_height="343dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        opencv:camera_id="0"
-        opencv:show_fps="true"
-        tools:ignore="MissingConstraints" />
+    ]]>
 
     <ImageView
         android:id="@+id/imgview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginBottom="280dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/camera"
         tools:srcCompat="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/yukle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="YÜKLE"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/imgview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.652" />
 
 
 </android.support.constraint.ConstraintLayout>

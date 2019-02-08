@@ -1,21 +1,20 @@
 package com.example.meric.knockknockapp;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,7 +22,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FirebaseStorage;
+import com.google.android.gms.vision.Frame;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -36,17 +35,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static android.os.Environment.DIRECTORY_DCIM;
-import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.MultiProcessor;
-import com.google.android.gms.vision.Tracker;
+import android.graphics.drawable.BitmapDrawable;
+
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
-import com.example.meric.knockknockapp.CameraSourcePreview;
-import com.example.meric.knockknockapp.GraphicOverlay;
 
 
 /*
@@ -61,6 +54,7 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
     Button captr,cancel;
     EditText dosya;
     Button kaydet;
+    Button yukle;
     private static Uri fileUri = null;
     boolean dirExists = true;
     private static final int CAMERA_IMAGE_REQUEST=1;
@@ -72,7 +66,8 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
     public boolean uploadDone = false;
     public static final int Camera_Req = 9999;
     public static boolean save=false;
-
+    private final int ACTIVITY_CHOOSE_PHOTO = 1;
+    private String downFotoName="";
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
 
@@ -86,31 +81,41 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
         dosya = findViewById(R.id.dosyaAdi);//fotoğrafın adı olark kaydedilecek
         kaydet = findViewById(R.id.saveBtn);//foto galeriye kaydedilir  !!?? DB'ye kaydetmeli !!!??
         cancel = findViewById(R.id.cancel_btn);//yeni kişi ekleme sayfasından çıkılır
+        yukle = findViewById(R.id.yukle);//var olan fotoyu kullanmak için
 
 
-//        captr.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//
-//                Intent kamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
-//                Toast.makeText(AddNewActivity.this,"Kamera açıldı!",Toast.LENGTH_LONG).show();
-//                startActivityForResult(kamera, Camera_Req);
-//
-//            }
-//        });
+        final DetectFaceActivity faceDet = new DetectFaceActivity();
+
+        captr.setOnClickListener(new View.OnClickListener() {
+            @Override
+           public void onClick(View v) {
+
+
+                Intent kamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
+                Toast.makeText(AddNewActivity.this,"Kamera açıldı!",Toast.LENGTH_LONG).show();
+                startActivityForResult(kamera, Camera_Req);
+
+            }
+        });
+
+       /* yukle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              //  openGallery();
+            }
+        });*/
 
         kaydet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                save = true;
+               // save = true;
                 try {
                     createImageFile(dosya.getText().toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 // Toast.makeText(AddNewActivity.this, "Kaydedildi!", Toast.LENGTH_SHORT).show();
-                save = false;
+               // save = false;
             }
         });
 
@@ -120,7 +125,118 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
                 finish();
             }
         });
+
+
+
+
+        //                --- YÜKLENEN FOTOĞRAFLA KİŞİYİ KAYDETME ---
+
+
+        yukle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                startActivity(new Intent(AddNewActivity.this, DetectFaceActivity.class));
+               /* openGallery();
+                if(!downFotoName.equals("")){ redSqr();}*/
+            }
+        });
+
+    }//onCreate
+
+    //Galeriyi açıp foto seçmeyi sağlamalı
+    public void openGallery()
+    {
+        Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+        chooseFile.setType("image/*");
+        chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(Intent.createChooser(chooseFile, "Choose a photo"), ACTIVITY_CHOOSE_PHOTO);
+        Toast.makeText(AddNewActivity.this, downFotoName, Toast.LENGTH_SHORT).show();
+
     }
+
+    public String parseUriToFilename(Uri uri) {
+        String selectedImagePath = null;
+        String filemanagerPath = uri.getPath();
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        if (cursor != null) {
+    // Here you will get a null pointer if cursor is null
+    // This can be if you used OI file manager for picking the media
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            selectedImagePath = cursor.getString(column_index);
+        }
+
+        if (selectedImagePath != null) {
+            return selectedImagePath;
+        }
+        else if (filemanagerPath != null) {
+
+            return filemanagerPath;
+        }
+        return null;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+            case ACTIVITY_CHOOSE_PHOTO: {
+                if (resultCode == RESULT_OK) {
+                    String filename = parseUriToFilename(data.getData());
+                    if (filename != null) {
+                        downFotoName = filename;
+                       // moustachify(filename, null);
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    public void redSqr()
+    {
+        // galeriden gelen dosyanın adını okumalı  ( openGalley metod )
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inMutable = true;
+        Bitmap myBitmap = (Bitmap) BitmapFactory.decodeResource(
+                getApplicationContext().getResources(),
+                Integer.parseInt(downFotoName),
+                options);
+
+        FaceDetector faceDetector= new FaceDetector.Builder(getApplicationContext()).setTrackingEnabled(true).build();
+
+
+        Frame frame = new Frame.Builder().setBitmap(myBitmap).build();//görüntü bitmap olmalı
+
+        SparseArray<Face> faces = faceDetector.detect(frame);
+
+        Paint myRectPaint = new Paint();
+        myRectPaint.setStrokeWidth(5);
+        myRectPaint.setColor(Color.RED);
+        myRectPaint.setStyle(Paint.Style.STROKE);
+
+        Bitmap tempBitmap = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), Bitmap.Config.RGB_565);
+        Canvas tempCanvas = new Canvas(tempBitmap);
+        tempCanvas.drawBitmap(myBitmap, 0, 0, null);
+
+
+        // Yüz'ün etrafında kırmızı kare çizmek için;
+
+        for(int i=0; i<faces.size(); i++) {
+            Face thisFace = faces.valueAt(i);
+            float x1 = thisFace.getPosition().x;
+            float y1 = thisFace.getPosition().y;
+            float x2 = x1 + thisFace.getWidth();
+            float y2 = y1 + thisFace.getHeight();
+            tempCanvas.drawRoundRect(new RectF(x1, y1, x2, y2), 2, 2, myRectPaint);
+        }
+        foto.setImageDrawable(new BitmapDrawable(getResources(),tempBitmap));
+
+
+    }
+
 
     public void detectFace(View view){
 
@@ -129,7 +245,7 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
 
     }
 
-    @Override
+  /*  @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         super.onActivityResult(requestCode,resultCode,data);
@@ -160,7 +276,7 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
                 uploadDone = true;
             }
         }*/
-    }
+   // }
 
     String mCurrentPhotoPath;
 
@@ -250,4 +366,4 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
     }
 
 
-}//class
+}
