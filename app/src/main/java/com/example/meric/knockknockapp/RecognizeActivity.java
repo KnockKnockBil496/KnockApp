@@ -26,6 +26,8 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static org.opencv.objdetect.Objdetect.CASCADE_SCALE_IMAGE;
 
@@ -41,6 +43,8 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
     private double predict[] = new double[1];
     private Storage local;
     private FaceRecognizer recognize;
+    private boolean stopper = false;
+
     private BaseLoaderCallback callbackLoader = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -77,8 +81,10 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
         }
         Mat croped = new Mat(mat, rect_Crop);
         recognize.predict(croped, label, predict);
-        if(label[0] != -1 && (int)predict[0] < 125)
-            Toast.makeText(getApplicationContext(), "Welcome "+imagesLabels.get(label[0])+"", Toast.LENGTH_SHORT).show();
+        if(label[0] != -1 && (int)predict[0] < 125) {
+            Toast.makeText(getApplicationContext(), "Welcome " + imagesLabels.get(label[0]) + "", Toast.LENGTH_SHORT).show();
+            stopper = true;
+        }
         else
             Toast.makeText(getApplicationContext(), "You're not the right person", Toast.LENGTH_SHORT).show();
     }
@@ -90,33 +96,81 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
         Stetho.initializeWithDefaults(this);
 
 
-        openCVCamera = (CameraBridgeViewBase)findViewById(R.id.java_camera_view2);
+        openCVCamera = (CameraBridgeViewBase) findViewById(R.id.java_camera_view2);
         openCVCamera.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
         openCVCamera.setVisibility(SurfaceView.VISIBLE);
         openCVCamera.setCvCameraViewListener(this);
         local = new Storage(this);
-        final Button recogniz = (Button)findViewById(R.id.recognize_button);
-        recogniz.setOnClickListener(new View.OnClickListener() {
+
+        //bu thread yardimi ile her 0.5 saniyede bir yüz taninmaya calisiyor
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                while (!stopper) {
+                    try {
+                        Thread.sleep(500);  //1000ms = 1 sec
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (gray.total() == 0)
+                                    Toast.makeText(getApplicationContext(), "Can't Detect Faces", Toast.LENGTH_SHORT).show();
+                                classifier.detectMultiScale(gray, faces, 1.1, 3, 0 | CASCADE_SCALE_IMAGE, new Size(30, 30));
+                                if (!faces.empty()) {
+                                    if (faces.toArray().length > 1)
+                                        Toast.makeText(getApplicationContext(), "Mutliple Faces Are not allowed", Toast.LENGTH_SHORT).show();
+                                    else {
+                                        if (gray.total() == 0) {
+                                            Log.i(TAG, "Empty gray image");
+                                            return;
+                                        }
+                                        recognizeImage(gray);
+                                    }
+                                } else
+                                    Toast.makeText(getApplicationContext(), "Unknown Face", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        t.start();
+
+        final Button recognize = (Button) findViewById(R.id.recognize_button);
+        recognize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(gray.total() == 0)
-                    Toast.makeText(getApplicationContext(), "Can't Detect Faces", Toast.LENGTH_SHORT).show();
-                classifier.detectMultiScale(gray,faces,1.1,3,0|CASCADE_SCALE_IMAGE, new Size(30,30));
-                if(!faces.empty()) {
-                    if(faces.toArray().length > 1)
-                        Toast.makeText(getApplicationContext(), "Mutliple Faces Are not allowed", Toast.LENGTH_SHORT).show();
-                    else {
-                        if(gray.total() == 0) {
-                            Log.i(TAG, "Empty gray image");
-                            return;
-                        }
-                        recognizeImage(gray);
-                    }
-                }else
-                    Toast.makeText(getApplicationContext(), "Unknown Face", Toast.LENGTH_SHORT).show();
+                stopper = false;
             }
         });
     }
+////////  recognize butonu artik gerekli degil. Onun yerine yukarida thread yazildi.
+
+//        final Button recogniz = (Button)findViewById(R.id.recognize_button);
+//        recogniz.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(gray.total() == 0)
+//                    Toast.makeText(getApplicationContext(), "Can't Detect Faces", Toast.LENGTH_SHORT).show();
+//                classifier.detectMultiScale(gray,faces,1.1,3,0|CASCADE_SCALE_IMAGE, new Size(30,30));
+//                if(!faces.empty()) {
+//                    if(faces.toArray().length > 1)
+//                        Toast.makeText(getApplicationContext(), "Mutliple Faces Are not allowed", Toast.LENGTH_SHORT).show();
+//                    else {
+//                        if(gray.total() == 0) {
+//                            Log.i(TAG, "Empty gray image");
+//                            return;
+//                        }
+//                        recognizeImage(gray);
+//                    }
+//                }else
+//                    Toast.makeText(getApplicationContext(), "Unknown Face", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
 
     @Override
     protected void onPause() {

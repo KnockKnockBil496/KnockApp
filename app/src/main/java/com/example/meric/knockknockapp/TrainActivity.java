@@ -67,7 +67,7 @@ public class TrainActivity extends AppCompatActivity implements CameraBridgeView
     private static final int PERMS_REQUEST_CODE = 123;
     private ArrayList<Mat> images;
     private ArrayList<String> imagesLabels;
-     private Storage local;
+    private Storage local;
     private String[] uniqueLabels;
     FaceRecognizer recognize;
 
@@ -110,6 +110,8 @@ public class TrainActivity extends AppCompatActivity implements CameraBridgeView
                         cropedImages(gray);
                         addLabel("Aybike");
                         Toast.makeText(getApplicationContext(), "Face Detected", Toast.LENGTH_SHORT).show();
+                        finish();
+
                     }
                 }else
                     Toast.makeText(getApplicationContext(), "Unknown Face", Toast.LENGTH_SHORT).show();
@@ -329,6 +331,7 @@ public class TrainActivity extends AppCompatActivity implements CameraBridgeView
 
         recognize = LBPHFaceRecognizer.create(3,8,8,8,200);
         recognize.train(imagesMatrix, vectorClasses);
+
         if(SaveImage())
             return true;
 
