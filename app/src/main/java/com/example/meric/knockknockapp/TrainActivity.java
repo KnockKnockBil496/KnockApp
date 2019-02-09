@@ -313,7 +313,7 @@ public class TrainActivity extends AppCompatActivity implements CameraBridgeView
 
         int[] classesNumbers = new int[uniqueLabels.length];
         for (int i = 0; i < classesNumbers.length; i++)
-            classesNumbers[i] = i + 1; // Create incrementing list for each unique label starting at 1
+            classesNumbers[i] = i; // Create incrementing list for each unique label starting at 1
         int[] classes = new int[imagesLabels.size()];
         for (int i = 0; i < imagesLabels.size(); i++) {
             String label = imagesLabels.get(i);
