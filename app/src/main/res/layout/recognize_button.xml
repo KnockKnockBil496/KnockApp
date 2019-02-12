@@ -7,6 +7,17 @@
     tools:context=".RecognizeActivity"
     tools:showIn="@layout/recognize_main">
 
+    <Button
+        android:id="@+id/recognize_button2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@color/black_overlay"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp"
+        android:text="Recognize"
+        android:textColor="@android:color/white" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,5 +38,7 @@
             android:text="Recognize" />
 
     </LinearLayout>
+
+
 
 </RelativeLayout>

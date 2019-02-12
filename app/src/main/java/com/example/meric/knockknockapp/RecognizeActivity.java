@@ -82,7 +82,7 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
         Mat croped = new Mat(mat, rect_Crop);
         recognize.predict(croped, label, predict);
         if(label[0] != -1 && (int)predict[0] < 125) {
-            Toast.makeText(getApplicationContext(), "Welcome " + imagesLabels.get(label[0]) + "", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Welcome " + imagesLabels.get(label.length-1) + "", Toast.LENGTH_SHORT).show();
             stopper = true;
         }
         else

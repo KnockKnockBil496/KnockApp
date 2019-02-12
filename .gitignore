@@ -10,3 +10,5 @@
 .externalNativeBuild
 /OpenCV
 /openCVLibrary2411
+/openCVLibrary400pre
+/app/src/main/jniLibs

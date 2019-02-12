@@ -27,6 +27,7 @@ import com.google.firebase.storage.UploadTask;
 public class MainActivity extends AppCompatActivity {
 
     public static String emailAdress;
+    public static int imgCounter = 0;
     Button addNew1;
     Button setMailBtn;
     public static final int Camera_Req = 9999;

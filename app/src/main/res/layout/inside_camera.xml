@@ -22,12 +22,22 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
             android:background="@color/black_overlay"
-            android:textColor="@android:color/white"
-            android:text="Take Photo" />
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp"
+            android:text="Take Photo"
+            android:textColor="@android:color/white" />
 
+        <Button
+            android:id="@+id/save_face"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp"
+            android:background="@color/black_overlay"
+            android:text="Save Face"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
 </RelativeLayout>
