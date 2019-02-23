@@ -9,35 +9,46 @@
 
     <LinearLayout
 
-        android:layout_width="match_parent"
+        android:layout_width="307dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="0dp"
         android:orientation="horizontal"
         tools:ignore="UselessParent">
 
         <Button
             android:id="@+id/take_picture_button"
-
-            android:layout_width="0dp"
+            android:layout_width="374dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/black_overlay"
-            android:paddingBottom="20dp"
             android:paddingTop="20dp"
+            android:paddingBottom="20dp"
             android:text="Take Photo"
             android:textColor="@android:color/white" />
 
-        <Button
-            android:id="@+id/save_face"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <EditText
+            android:id="@+id/save_name"
+            android:layout_width="352dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
+            android:text="İsim girin"
+            android:textColor="@color/cast_expanded_controller_text_color"
+            android:textStyle="bold" />
+
+
+        <Button
+            android:id="@+id/save_img"
+            android:layout_width="327dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:background="@color/black_overlay"
-            android:text="Save Face"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:text="Save Person"
             android:textColor="@android:color/white" />
+
     </LinearLayout>
 
 </RelativeLayout>

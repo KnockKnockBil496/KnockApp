@@ -72,6 +72,8 @@ public class TrainActivity extends AppCompatActivity implements CameraBridgeView
     private Storage local;
     private String[] uniqueLabels;
     FaceRecognizer recognize;
+    AddNewActivity object;
+    TextView isim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,41 +96,47 @@ public class TrainActivity extends AppCompatActivity implements CameraBridgeView
         openCVCamera.setVisibility(SurfaceView.VISIBLE);
         openCVCamera.setCvCameraViewListener(this);
         local = new Storage(this);
+        isim = findViewById(R.id.save_name);
 
         Button detect = (Button)findViewById(R.id.take_picture_button);
         detect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(gray.total() == 0)
-                    Toast.makeText(getApplicationContext(), "Can't Detect Faces", Toast.LENGTH_SHORT).show();
-                classifier.detectMultiScale(gray,faces,1.1,3,0|CASCADE_SCALE_IMAGE, new Size(30,30));
-                if(!faces.empty()) {
-                    if(gray.total() == 0) {
-                        Log.i(TAG, "Empty gray image");
-                        return;
-                    }
-                    cropedImages(gray);
-                    addLabel("DetectedFace" + imgCounter);
-                    imgCounter++;
-                    Toast.makeText(getApplicationContext(), "Face Detected: " + imagesLabels.get(imagesLabels.size()-1), Toast.LENGTH_SHORT).show();
-                }else
-                    Toast.makeText(getApplicationContext(), "Unknown Face", Toast.LENGTH_SHORT).show();
-            }
+
+                    if (gray.total() == 0)
+                        Toast.makeText(getApplicationContext(), "Can't Detect Faces", Toast.LENGTH_SHORT).show();
+                    classifier.detectMultiScale(gray, faces, 1.1, 3, 0 | CASCADE_SCALE_IMAGE, new Size(30, 30));
+                    if (!faces.empty()) {
+                        if (gray.total() == 0) {
+                            Log.i(TAG, "Empty gray image");
+                            return;
+                        }
+                        cropedImages(gray);
+                        addLabel(isim.getText().toString());
+                        //addLabel("DetectedFace" + imgCounter);
+                        imgCounter++;
+                        Toast.makeText(getApplicationContext(), "Face Detected: " + imagesLabels.get(imagesLabels.size() - 1), Toast.LENGTH_SHORT).show();
+
+                    } else
+                        Toast.makeText(getApplicationContext(), "Unknown Face", Toast.LENGTH_SHORT).show();
+                }
         });
 
-        Button putFaces = (Button)findViewById(R.id.save_face);
+        // Burayı otomatik yapsın; 3 fotodan sonra kaydetsin direkt;
+
+        Button putFaces = (Button)findViewById(R.id.save_img);
         putFaces.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick (View view){
                 if(trainfaces()) {
-                    Toast.makeText(getApplicationContext(), "Face Detected: " + imgCounter, Toast.LENGTH_SHORT).show();
-//                    images.clear();
-//                    imagesLabels.clear();
+                    Toast.makeText(getApplicationContext(), "Person Saved: " + isim.getText().toString(), Toast.LENGTH_SHORT).show();
+                    //images.clear();
+                    //imagesLabels.clear();
                 }
             }
         });
+        
     }
-
 
     @SuppressLint("WrongConstant")
     private boolean hasPermissions(){
@@ -215,10 +223,10 @@ public class TrainActivity extends AppCompatActivity implements CameraBridgeView
             local.putListString("imagesLabels", imagesLabels);
             Log.i(TAG, "Images have been saved");
 
-//            if(trainfaces()) {
-//                images.clear();
-//                imagesLabels.clear();
-//            }
+          /*  if(trainfaces()) {
+                images.clear();
+                imagesLabels.clear();
+            }*/
         }
     }
     @Override
@@ -293,16 +301,35 @@ public class TrainActivity extends AppCompatActivity implements CameraBridgeView
         return rgba;
     }
 
-    public boolean SaveImage() {
+    public boolean SaveImage() { // xml dosyasını kişinin adıyla oluştur
         File path = new File(Environment.getExternalStorageDirectory(), "TrainedData");
         path.mkdirs();
-        String filename = "lbph_trained_data.xml";
+        String filename ="lbph_trained_data.xml";
         File file = new File(path, filename);
         recognize.save(file.toString());
         if(file.exists())
             return true;
         return false;
+
+
+      /*  File path = new File(Environment.getExternalStorageDirectory(), "TrainedData");
+        path.mkdirs();
+        String filename ;
+        File file;
+      for(int i=0; i<imagesLabels.size()-1; i++)
+        {
+            if(!imagesLabels.get(i).equals(imagesLabels.get(i+1)))
+            {
+                filename = imagesLabels.get(i)+"_trained_data.xml";
+                file = new File(path, filename);
+                recognize.save(file.toString());
+                if(file.exists())
+                    return true;
+            }
+        }
+        return false;*/
     }
+
     public void cropedImages(Mat mat) {
         Rect rect_Crop=null;
         for(Rect face: faces.toArray()) {

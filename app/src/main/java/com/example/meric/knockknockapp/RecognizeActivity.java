@@ -25,6 +25,7 @@ import org.opencv.face.LBPHFaceRecognizer;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,6 +45,7 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
     private Storage local;
     private FaceRecognizer recognize;
     private boolean stopper = false;
+    ArrayList<String> names = new ArrayList<>();
 
     private BaseLoaderCallback callbackLoader = new BaseLoaderCallback(this) {
         @Override
@@ -65,14 +67,21 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
         }
     };
     private boolean loadData() {
-        String filename = FileUtils.loadTrained();
-        if(filename.isEmpty())
-            return false;
-        else
-        {
-            recognize.read(filename);
-            return true;
+        String filename;
+        for(int i=0; i<imagesLabels.size(); i++) {
+            filename = FileUtils.loadTrained();
+            names.add(filename);
         }
+        if (names.isEmpty())
+            return false;
+        else {
+            for(int i=0; i<imagesLabels.size(); i++) {
+                recognize.read(names.get(i));
+                return true;
+            }
+            return false;
+        }
+
     }
     private void recognizeImage(Mat mat) {
         Rect rect_Crop=null;
