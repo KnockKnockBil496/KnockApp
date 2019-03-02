@@ -88,23 +88,24 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
 
         captr.setOnClickListener(new View.OnClickListener() {
             @Override
-           public void onClick(View v) {
+            public void onClick(View v) {
 
 
-                Intent kamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
-                Toast.makeText(AddNewActivity.this,"Kamera açıldı!",Toast.LENGTH_LONG).show();
-                startActivityForResult(kamera, Camera_Req);
+//                Intent kamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // Resim çekme isteği
+//                Toast.makeText(AddNewActivity.this,"Kamera açıldı!",Toast.LENGTH_LONG).show();
+//                startActivityForResult(kamera, Camera_Req);
+                Intent swap = new Intent(AddNewActivity.this, TrainActivity.class);
+                startActivity(swap);
+
+
 
             }
         });
-
-       /* yukle.setOnClickListener(new View.OnClickListener() {
+        /* yukle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
               //  openGallery();
-            }
-        });*/
-
+              */
         kaydet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,8 +162,7 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
         String[] projection = { MediaStore.Images.Media.DATA };
         Cursor cursor = managedQuery(uri, projection, null, null, null);
         if (cursor != null) {
-    // Here you will get a null pointer if cursor is null
-    // This can be if you used OI file manager for picking the media
+
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
             selectedImagePath = cursor.getString(column_index);

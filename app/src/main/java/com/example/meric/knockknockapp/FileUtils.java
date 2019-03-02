@@ -59,6 +59,7 @@ public class FileUtils {
     }
     public static String loadTrained() {
         File file = new File(Environment.getExternalStorageDirectory(), "TrainedData/lbph_trained_data.xml");
+        //File file = new File(Environment.getExternalStorageDirectory(),file.getPath().endsWith("_trained_data.xml"));
 
         return file.toString();
     }

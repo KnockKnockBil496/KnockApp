@@ -32,6 +32,12 @@
         <activity android:name=".TextToSpeechActivity"></activity>
         <activity android:name=".WatchPeopleActivity"></activity>
         <activity android:name=".DetectFaceActivity"></activity>
+        <activity android:name=".TrainActivity" android:screenOrientation="fullSensor"
+
+            />
+        <activity android:name=".RecognizeActivity" android:screenOrientation="fullSensor"
+
+            />
         <!--<activity android:name=".VideoFaceDetectionActivity"></activity>-->
 
 

@@ -27,6 +27,7 @@ import com.google.firebase.storage.UploadTask;
 public class MainActivity extends AppCompatActivity {
 
     public static String emailAdress;
+    public static int imgCounter = 0;
     Button addNew1;
     Button setMailBtn;
     public static final int Camera_Req = 9999;
@@ -93,9 +94,14 @@ public class MainActivity extends AppCompatActivity {
         watchPeople.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showGuests();
+              //  showGuests();
                 /*Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(intent, OPEN_CAMERA);*/
+
+                Intent swap = new Intent(MainActivity.this, RecognizeActivity.class);
+                startActivity(swap);
+
+
             }
         });
 
