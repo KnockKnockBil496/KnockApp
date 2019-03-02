@@ -2,20 +2,27 @@ package com.example.meric.knockknockapp;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 import com.facebook.stetho.Stetho;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
@@ -27,6 +34,10 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Timer;
@@ -38,7 +49,7 @@ import static org.opencv.objdetect.Objdetect.CASCADE_SCALE_IMAGE;
 public class RecognizeActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2,OnInitListener {
     private static String TAG = TrainActivity.class.getSimpleName();
     private CameraBridgeViewBase openCVCamera;
-    private Mat rgba,gray;
+    private Mat rgba, gray;
     private CascadeClassifier classifier;
     private MatOfRect faces;
     private ArrayList<String> imagesLabels;
@@ -50,18 +61,22 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
     ArrayList<String> names = new ArrayList<>();
     private TextToSpeech myTTS;
     private int MY_DATA_CHECK_CODE = 0;
+    String personName="";
+
+
+
 
     private BaseLoaderCallback callbackLoader = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
-            switch(status) {
+            switch (status) {
                 case BaseLoaderCallback.SUCCESS:
                     faces = new MatOfRect();
                     openCVCamera.enableView();
-                    recognize = LBPHFaceRecognizer.create(3,8,8,8,200);
+                    recognize = LBPHFaceRecognizer.create(3, 8, 8, 8, 200);
                     imagesLabels = local.getListString("imagesLabels");
 
-                    if(loadData())
+                    if (loadData())
                         Log.i(TAG, "Trained data loaded successfully");
                     break;
                 default:
@@ -70,38 +85,50 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
             }
         }
     };
+
     private boolean loadData() {
         String filename;
-        for(int i=0; i<imagesLabels.size(); i++) {
+        for (int i = 0; i < imagesLabels.size(); i++) {
             filename = FileUtils.loadTrained();
             names.add(filename);
         }
         if (names.isEmpty())
             return false;
         else {
-            for(int i=0; i<imagesLabels.size(); i++) {
+            for (int i = 0; i < imagesLabels.size(); i++) {
                 recognize.read(names.get(i));
                 return true;
             }
             return false;
         }
-
     }
+
+    public Bitmap createBitmapfromMat(Mat snap){
+        Bitmap bp = Bitmap.createBitmap(snap.cols(), snap.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(snap, bp);
+        return bp;
+    }
+
     private void recognizeImage(Mat mat) {
-        Rect rect_Crop=null;
-        for(Rect face: faces.toArray()) {
+        Rect rect_Crop = null;
+        for (Rect face : faces.toArray()) {
             rect_Crop = new Rect(face.x, face.y, face.width, face.height);
         }
         Mat croped = new Mat(mat, rect_Crop);
+        Bitmap bitmap = createBitmapfromMat(rgba);
         recognize.predict(croped, label, predict);
-        if(label[0] != -1 && (int)predict[0] < 125) {
-            Toast.makeText(getApplicationContext(), "Welcome " + imagesLabels.get(label.length-1) + "", Toast.LENGTH_SHORT).show();
-            String name = "Merhaba"+imagesLabels.get(label.length-1);
-            speakWords(name);
+
+        if (label[0] != -1 && (int) predict[0] < 125) {
+            Toast.makeText(getApplicationContext(), "Merhaba " + imagesLabels.get(label.length - 1) + "", Toast.LENGTH_SHORT).show();
+            personName = imagesLabels.get(label.length - 1);
             stopper = true;
-        }
-        else
+        } else{
             Toast.makeText(getApplicationContext(), "You're not the right person", Toast.LENGTH_SHORT).show();
+            personName = "belirsiz";
+        }
+
+        storeScreenshot(bitmap,personName);
+        speakWords("Merhaba" + personName);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -110,8 +137,7 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                 //the user has the necessary data - create the TTS
                 myTTS = new TextToSpeech(this, this);
-            }
-            else {
+            } else {
                 //no data - install it now
                 Intent installTTSIntent = new Intent();
                 installTTSIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
@@ -136,6 +162,24 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
         openCVCamera.setVisibility(SurfaceView.VISIBLE);
         openCVCamera.setCvCameraViewListener(this);
         local = new Storage(this);
+
+
+
+//        // Here, we are making a folder named picFolder to store
+//        // pics taken by the camera using this application.
+//        final String dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/picFolder/";
+//        File newdir = new File(dir);
+//        newdir.mkdirs();
+//                String file = dir + personName + ".jpg";
+//                File newfile = new File(file);
+//                try {
+//                    newfile.createNewFile();
+//                } catch (IOException e) {
+//                }
+//
+//                Uri outputFileUri = Uri.fromFile(newfile);
+//
+//
 
         //bu thread yardimi ile her 0.5 saniyede bir yüz taninmaya calisiyor
         Thread t = new Thread() {
@@ -210,25 +254,28 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
     @Override
     protected void onPause() {
         super.onPause();
-        if(openCVCamera != null)
+        if (openCVCamera != null)
             openCVCamera.disableView();
 
 
     }
+
     @Override
     protected void onStop() {
         super.onStop();
     }
+
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
-        if(openCVCamera != null)
+        if (openCVCamera != null)
             openCVCamera.disableView();
     }
+
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
-        if(OpenCVLoader.initDebug()) {
+        if (OpenCVLoader.initDebug()) {
             Log.i(TAG, "System Library Loaded Successfully");
             callbackLoader.onManagerConnected(BaseLoaderCallback.SUCCESS);
         } else {
@@ -236,6 +283,7 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, this, callbackLoader);
         }
     }
+
     @Override
     public void onCameraViewStarted(int width, int height) {
         rgba = new Mat();
@@ -286,7 +334,7 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
         }
         gray = mGrayTmp;
         rgba = mRgbaTmp;
-        Imgproc.resize(gray, gray, new Size(200,200.0f/ ((float)gray.width()/ (float)gray.height())));
+        Imgproc.resize(gray, gray, new Size(200, 200.0f / ((float) gray.width() / (float) gray.height())));
         return rgba;
     }
 
@@ -296,16 +344,41 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
         myTTS.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
     }
 
+    public void storeScreenshot(Bitmap bitmap, String filename) {
+        String path = Environment.getExternalStorageDirectory().toString() + "/" + filename+".jpg";
+        OutputStream out = null;
+        File imageFile = new File(path);
+
+        try {
+            out = new FileOutputStream(imageFile);
+            // choose JPEG format
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+        } catch (FileNotFoundException e) {
+            // manage exception ...
+        } catch (IOException e) {
+            // manage exception ...
+        } finally {
+
+            try {
+                if (out != null) {
+                    out.close();
+                }
+
+            } catch (Exception exc) {
+            }
+
+        }
+    }
+
     public void onInit(int initStatus) {
 
         //check for successful instantiation
         if (initStatus == TextToSpeech.SUCCESS) {
-            if(myTTS.isLanguageAvailable(Locale.US)==TextToSpeech.LANG_AVAILABLE)
+            if (myTTS.isLanguageAvailable(Locale.US) == TextToSpeech.LANG_AVAILABLE)
                 myTTS.setLanguage(Locale.US);
-        }
-        else if (initStatus == TextToSpeech.ERROR) {
+        } else if (initStatus == TextToSpeech.ERROR) {
             Toast.makeText(this, "Sorry! Text To Speech failed...", Toast.LENGTH_LONG).show();
         }
     }
 }
-
