@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -20,6 +21,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+
+import static android.content.Intent.ACTION_OPEN_DOCUMENT;
+import static android.os.Environment.DIRECTORY_DCIM;
+import static android.os.Environment.getExternalStoragePublicDirectory;
 //import com.google.android.gms.vision.Frame;
 //import com.google.android.gms.vision.face.Face;
 //import com.google.android.gms.vision.face.FaceDetector;
@@ -83,9 +90,15 @@ public class MainActivity extends AppCompatActivity {
         mSelectImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(android.content.Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent,GALERY_INTENT);
+//          Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
+//              intent.setType("image/*");
+//              startActivityForResult(intent,GALERY_INTENT);
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                String storageDir =Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/picFolder/";
+                Uri uri = Uri.parse(storageDir);
+              //  Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(uri, "*/*");
+                startActivity(intent);
             }
         });
 

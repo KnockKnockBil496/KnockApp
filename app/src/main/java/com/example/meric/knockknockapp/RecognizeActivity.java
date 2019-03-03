@@ -38,7 +38,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -62,7 +67,8 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
     private TextToSpeech myTTS;
     private int MY_DATA_CHECK_CODE = 0;
     String personName="";
-
+    String dir ="";
+    String storePerson="";
 
 
 
@@ -127,7 +133,8 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
             personName = "belirsiz";
         }
 
-        storeScreenshot(bitmap,personName);
+        storePerson=getCurrentTimeUsingDate()+"_"+personName ;
+        storeScreenshot(bitmap,storePerson);
         speakWords("Merhaba" + personName);
     }
 
@@ -167,9 +174,10 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
 
 //        // Here, we are making a folder named picFolder to store
 //        // pics taken by the camera using this application.
-//        final String dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/picFolder/";
-//        File newdir = new File(dir);
-//        newdir.mkdirs();
+       dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/picFolder/";
+       File newdir = new File(dir);
+       newdir.mkdirs();
+
 //                String file = dir + personName + ".jpg";
 //                File newfile = new File(file);
 //                try {
@@ -182,53 +190,69 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
 //
 
         //bu thread yardimi ile her 0.5 saniyede bir yüz taninmaya calisiyor
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                while (!stopper) {
-                    try {
-                        Thread.sleep(500);  //1000ms = 1 sec
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (gray.total() == 0)
-                                    Toast.makeText(getApplicationContext(), "Can't Detect Faces", Toast.LENGTH_SHORT).show();
-                                classifier.detectMultiScale(gray, faces, 1.1, 3, 0 | CASCADE_SCALE_IMAGE, new Size(30, 30));
-                                if (!faces.empty()) {
-                                    if (faces.toArray().length > 1)
-                                        Toast.makeText(getApplicationContext(), "Mutliple Faces Are not allowed", Toast.LENGTH_SHORT).show();
-                                    else {
-                                        if (gray.total() == 0) {
-                                            Log.i(TAG, "Empty gray image");
-                                            return;
-                                        }
-                                        recognizeImage(gray);
-                                    }
-                                } else
-                                    Toast.makeText(getApplicationContext(), "Unknown Face", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+//        Thread t = new Thread() {
+//            @Override
+//            public void run() {
+//                while (!stopper) {
+//                    try {
+//                        Thread.sleep(500);  //1000ms = 1 sec
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                if (gray.total() == 0)
+//                                    Toast.makeText(getApplicationContext(), "Can't Detect Faces", Toast.LENGTH_SHORT).show();
+//                                classifier.detectMultiScale(gray, faces, 1.1, 3, 0 | CASCADE_SCALE_IMAGE, new Size(30, 30));
+//                                if (!faces.empty()) {
+//                                    if (faces.toArray().length > 1)
+//                                        Toast.makeText(getApplicationContext(), "Mutliple Faces Are not allowed", Toast.LENGTH_SHORT).show();
+//                                    else {
+//                                        if (gray.total() == 0) {
+//                                            Log.i(TAG, "Empty gray image");
+//                                            return;
+//                                        }
+//                                        recognizeImage(gray);
+//                                    }
+//                                } else
+//                                    Toast.makeText(getApplicationContext(), "Unknown Face", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        };
+//
+//        t.start();
 
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-
-        t.start();
-
-        final Button recognize = (Button) findViewById(R.id.recognize_button);
-        recognize.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopper = false;
-            }
+        final Button recogniz = (Button)findViewById(R.id.recognize_button);
+       recogniz.setOnClickListener(new View.OnClickListener() {
+           @Override
+          public void onClick(View view) {
+              if(gray.total() == 0)
+                   Toast.makeText(getApplicationContext(), "Can't Detect Faces", Toast.LENGTH_SHORT).show();
+               classifier.detectMultiScale(gray,faces,1.1,3,0|CASCADE_SCALE_IMAGE, new Size(30,30));
+               if(!faces.empty()) {
+                   if(faces.toArray().length > 1)
+                       Toast.makeText(getApplicationContext(), "Mutliple Faces Are not allowed", Toast.LENGTH_SHORT).show();
+                   else {
+                        if(gray.total() == 0) {
+                            Log.i(TAG, "Empty gray image");
+                           return;
+                        }
+                       recognizeImage(gray);
+                   }
+              }else
+                    Toast.makeText(getApplicationContext(), "Unknown Face", Toast.LENGTH_SHORT).show();
+           }
         });
+
+
     }
 ////////  recognize butonu artik gerekli degil. Onun yerine yukarida thread yazildi.
 
-//        final Button recogniz = (Button)findViewById(R.id.recognize_button);
+//        final Button recognize = (Button)findViewById(R.id.recognize_button);
 //        recogniz.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -345,11 +369,13 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
     }
 
     public void storeScreenshot(Bitmap bitmap, String filename) {
-        String path = Environment.getExternalStorageDirectory().toString() + "/" + filename+".jpg";
+      //  String path = Environment.getExternalStorageDirectory().toString() + "/" + filename+".jpg";
+        String path = dir.toString() + filename+".jpg";
         OutputStream out = null;
         File imageFile = new File(path);
 
         try {
+            imageFile.createNewFile();
             out = new FileOutputStream(imageFile);
             // choose JPEG format
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
@@ -381,4 +407,31 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
             Toast.makeText(this, "Sorry! Text To Speech failed...", Toast.LENGTH_LONG).show();
         }
     }
+
+
+    public String getCurrentTimeUsingDate() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+//        Calendar cal = Calendar.getInstance();
+//        Date date=cal.getTime();
+//        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+//        String formattedDate=dateFormat.format(date);
+//        Toast.makeText(this, "Date"+formattedDate, Toast.LENGTH_LONG).show();
+        return timeStamp;
+       // System.out.println("Current time of the day using Date - 12 hour format: " + formattedDate);
+    }
+
+
+    public String  getCurrentTime(){
+        //System.out.println("-----Current time of your time zone-----");
+        LocalTime time = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            time = LocalTime.now();
+        }
+        String Time = time.toString();
+        Toast.makeText(this, "Time"+Time, Toast.LENGTH_LONG).show();
+        return Time;
+    }
+
+
 }
