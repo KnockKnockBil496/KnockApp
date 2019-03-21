@@ -408,7 +408,7 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
 
     public void storeScreenshot(Bitmap bitmap, String filename) {
         //  String path = Environment.getExternalStorageDirectory().toString() + "/" + filename+".jpg";
-
+   ///storage/emulated/0/DCIM/Camera/1396863284629.jpg"
         String path = dir.toString() + filename+".jpg";
         OutputStream out = null;
         File imageFile = new File(path);

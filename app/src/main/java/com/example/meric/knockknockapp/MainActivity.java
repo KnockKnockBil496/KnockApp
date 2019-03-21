@@ -28,6 +28,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import static android.content.Intent.ACTION_OPEN_DOCUMENT;
 import static android.os.Environment.DIRECTORY_DCIM;
@@ -54,8 +57,7 @@ public class MainActivity extends AppCompatActivity {
     Button watchPeople;
     Button speechToText;
     ImageView foto;
-    StorageReference mStorage;
-    ProgressDialog mProgressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,40 +95,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //show  image in Galery
-        mStorage = FirebaseStorage.getInstance().getReference();
-        mSelectImage = findViewById(R.id.viewhistory);
-        mProgressDialog = new ProgressDialog(this);
+        mSelectImage = (Button) findViewById(R.id.viewhistory);
         mSelectImage.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-//                Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
-//             intent.setType("image/*");
-//            startActivityForResult(intent,DIRECTORY_DCIM);
-
-
-//                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-//                intent.addCategory(Intent.CATEGORY_OPENABLE);
-//                intent.setType("image/*");
-//                startActivityForResult(Intent.createChooser(intent, "Select Picture"),REQUEST_GET_SINGLE_FILE);
-
- //               File storageDir =Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-//                Uri uri = Uri.parse(storageDir);
-//              //  Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setDataAndType(uri, "*/*");
-//                startActivity(intent);
-//
-
-//// Create intent to Open Image applications like Gallery, Google Photos
-//                Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-//                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                // Start the Intent
-//                startActivityForResult(galleryIntent,GALERY_INTENT);
-
-                //Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(galleryIntent,GALERY_INTENT);
-
+            public void onClick(View view) {
+                viewGuest();
             }
         });
 
@@ -172,12 +145,19 @@ public class MainActivity extends AppCompatActivity {
         startActivity(emailSetter);
     }
 
+    public void viewGuest() {
+        Intent guest = new Intent(this, Guest.class);
+        startActivity(guest);
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         super.onActivityResult(requestCode,resultCode,data);
         if(requestCode==Camera_Req){
             Bitmap image=(Bitmap)data.getExtras().get("data");//Çekilen resim id olarak bitmap şeklinde alındı ve imageview'e atandı
+
             foto.setImageBitmap(image);
 
             /*
@@ -189,38 +169,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        // photos are downloaded  https://console.firebase.google.com/project/knockapp-bf55d/storage/knockapp-bf55d.appspot.com/files~2FPhotos~2F
-        if(requestCode==GALERY_INTENT && resultCode == RESULT_OK && uploadDone == false){
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-            Cursor cursor = getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
-            cursor.moveToFirst();
-
-
-
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-
-            String imgDecodableString = cursor.getString(columnIndex);
-
-            cursor.close();
-            Uri uri = selectedImage;
-            // Uri uri = Uri.fromFile(new File(pathArray.get(array_position)));
-            mProgressDialog.setMessage("Uploading");
-            mProgressDialog.show();
-            StorageReference filepath = mStorage.child("Photos/").child(uri.getLastPathSegment());
-            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(MainActivity.this,"Upload is Done!",Toast.LENGTH_LONG).show();
-                    mProgressDialog.dismiss();
-                    uploadDone = true;
-                }
-            });
-            uploadDone = true;
-        }
-        // super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
