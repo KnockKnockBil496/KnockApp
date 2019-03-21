@@ -1,5 +1,6 @@
 package com.example.meric.knockknockapp;
 
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.facebook.stetho.Stetho;
@@ -207,7 +209,7 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
 
 //        // Here, we are making a folder named picFolder to store
 //        // pics taken by the camera using this application.
-        dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/picFolder/";
+        dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/Misafirlerim/";
         File newdir = new File(dir);
         newdir.mkdirs();
 
@@ -406,6 +408,7 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
 
     public void storeScreenshot(Bitmap bitmap, String filename) {
         //  String path = Environment.getExternalStorageDirectory().toString() + "/" + filename+".jpg";
+
         String path = dir.toString() + filename+".jpg";
         OutputStream out = null;
         File imageFile = new File(path);

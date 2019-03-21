@@ -278,6 +278,7 @@ public class AddNewActivity extends AppCompatActivity implements CameraBridgeVie
         }*/
    // }
 
+
     String mCurrentPhotoPath;
 
     private void createImageFile( String labelOfImage) throws IOException {//return type was File
