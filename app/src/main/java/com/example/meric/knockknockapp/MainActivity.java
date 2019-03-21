@@ -1,11 +1,16 @@
 package com.example.meric.knockknockapp;
 
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -26,6 +31,7 @@ import java.io.File;
 
 import static android.content.Intent.ACTION_OPEN_DOCUMENT;
 import static android.os.Environment.DIRECTORY_DCIM;
+import static android.os.Environment.DIRECTORY_PICTURES;
 import static android.os.Environment.getExternalStoragePublicDirectory;
 //import com.google.android.gms.vision.Frame;
 //import com.google.android.gms.vision.face.Face;
@@ -38,7 +44,10 @@ public class MainActivity extends AppCompatActivity {
     Button addNew1;
     Button setMailBtn;
     public static final int Camera_Req = 9999;
-    public static final int GALERY_INTENT = 2;
+    public static final int GALERY_INTENT = 3;
+
+
+    public static final int REQUEST_GET_SINGLE_FILE = 2;
     private static final int OPEN_CAMERA = 1;
     public boolean uploadDone = false;
     Button mSelectImage;
@@ -90,15 +99,34 @@ public class MainActivity extends AppCompatActivity {
         mSelectImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//          Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
-//              intent.setType("image/*");
-//              startActivityForResult(intent,GALERY_INTENT);
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                String storageDir =Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/picFolder/";
-                Uri uri = Uri.parse(storageDir);
-              //  Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(uri, "*/*");
-                startActivity(intent);
+//                Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
+//             intent.setType("image/*");
+//            startActivityForResult(intent,DIRECTORY_DCIM);
+
+
+//                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+//                intent.addCategory(Intent.CATEGORY_OPENABLE);
+//                intent.setType("image/*");
+//                startActivityForResult(Intent.createChooser(intent, "Select Picture"),REQUEST_GET_SINGLE_FILE);
+
+                //               File storageDir =Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+//                Uri uri = Uri.parse(storageDir);
+//              //  Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setDataAndType(uri, "*/*");
+//                startActivity(intent);
+//
+
+//// Create intent to Open Image applications like Gallery, Google Photos
+//                Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+//                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//                // Start the Intent
+//                startActivityForResult(galleryIntent,GALERY_INTENT);
+
+                //Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+
+                Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(galleryIntent,GALERY_INTENT);
+
             }
         });
 
@@ -107,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         watchPeople.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              //  showGuests();
+                //  showGuests();
                 /*Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(intent, OPEN_CAMERA);*/
 
@@ -158,9 +186,26 @@ public class MainActivity extends AppCompatActivity {
              */
         }
 
+
+
+
         // photos are downloaded  https://console.firebase.google.com/project/knockapp-bf55d/storage/knockapp-bf55d.appspot.com/files~2FPhotos~2F
         if(requestCode==GALERY_INTENT && resultCode == RESULT_OK && uploadDone == false){
-            Uri uri = data.getData();
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+
+            String imgDecodableString = cursor.getString(columnIndex);
+
+            cursor.close();
+            Uri uri = selectedImage;
             // Uri uri = Uri.fromFile(new File(pathArray.get(array_position)));
             mProgressDialog.setMessage("Uploading");
             mProgressDialog.show();
@@ -184,6 +229,16 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
+    public String getPathFromURI(Uri contentUri) {
+        String res = null;
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+        if (cursor.moveToFirst()) {
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            res = cursor.getString(column_index);
+        }
+        cursor.close();
+        return res;
+    }
 
 }

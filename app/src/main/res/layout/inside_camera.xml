@@ -23,8 +23,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/black_overlay"
-            android:paddingTop="20dp"
             android:paddingBottom="20dp"
+            android:paddingTop="20dp"
             android:text="Take Photo"
             android:textColor="@android:color/white" />
 
@@ -33,7 +33,7 @@
             android:layout_width="352dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="İsim girin"
+            android:text="Enter Name"
             android:textColor="@color/cast_expanded_controller_text_color"
             android:textStyle="bold" />
 
@@ -44,8 +44,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/black_overlay"
-            android:paddingTop="20dp"
             android:paddingBottom="20dp"
+            android:paddingTop="20dp"
             android:text="Save Person"
             android:textColor="@android:color/white" />
 

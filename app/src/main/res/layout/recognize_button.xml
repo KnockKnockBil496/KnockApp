@@ -31,11 +31,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
             android:background="@color/black_overlay"
-            android:textColor="@android:color/white"
-            android:text="Recognize" />
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp"
+            android:text="Rıng the Bell"
+            android:textColor="@android:color/white" />
 
     </LinearLayout>
 
