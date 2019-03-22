@@ -134,8 +134,7 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
 
         File[] filenames;
         filenames = FileUtils.loadTrained();
-        for(int j = 0; j< filenames.length; j++)
-            Log.d("myTag", "Filename: " + filenames[j].toString().substring(filenames[j].toString().lastIndexOf('/')+1,filenames[j].toString().length()-4) );
+
         for(int j = 0; j< filenames.length; j++) {
             name = filenames[j].toString().substring(filenames[j].toString().lastIndexOf('/')+1,filenames[j].toString().length()-4);
             if(stopper == true)
@@ -145,13 +144,18 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
                 recognize.predict(croped, label, predict);
             } catch(Exception e)
             {
-                Toast.makeText(getApplicationContext(), "Predict Hatası", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Predict Error", Toast.LENGTH_SHORT).show();
                 finish();
             }
 
             if (label[0] != -1 && (int) predict[0] < 125) {
-                Toast.makeText(getApplicationContext(), "Merhaba " +/*imagesLabels.get(label.length - 1)*/name, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Hello " +/*imagesLabels.get(label.length - 1)*/name, Toast.LENGTH_SHORT).show();
                 personName = name;
+                speakWords("Hello" + personName);
+                try {
+                    Thread.sleep(1000);
+                }
+                catch (Exception e){ }
                 stopper = true;
                 j = 100;
                 finish();
@@ -169,24 +173,23 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
             stopper = false;
             storePerson = getCurrentTimeUsingDate() + "_" + personName;
             storeScreenshot(bitmap, storePerson);
-            speakWords("Merhaba" + personName);
 
         }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-//        if (requestCode == MY_DATA_CHECK_CODE) {
-//            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-//                //the user has the necessary data - create the TTS
-//                myTTS = new TextToSpeech(this, this);
-//            } else {
-//                //no data - install it now
-//                Intent installTTSIntent = new Intent();
-//                installTTSIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-//                startActivity(installTTSIntent);
-//            }
-//        }
+        if (requestCode == MY_DATA_CHECK_CODE) {
+            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                //the user has the necessary data - create the TTS
+                myTTS = new TextToSpeech(this, this);
+            } else {
+                //no data - install it now
+                Intent installTTSIntent = new Intent();
+                installTTSIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                startActivity(installTTSIntent);
+            }
+        }
     }
 
     @Override
@@ -209,9 +212,9 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
 
 //        // Here, we are making a folder named picFolder to store
 //        // pics taken by the camera using this application.
-        dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/Misafirlerim/";
-        File newdir = new File(dir);
-        newdir.mkdirs();
+        dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/";
+       // File newdir = new File(dir);
+     //   newdir.mkdirs();
 
 //                String file = dir + personName + ".jpg";
 //                File newfile = new File(file);
@@ -332,6 +335,12 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
         super.onDestroy();
         if (openCVCamera != null)
             openCVCamera.disableView();
+        if(myTTS != null) {
+
+            myTTS.stop();
+            myTTS.shutdown();
+            Log.d(TAG, "TTS Destroyed");
+        }
     }
 
     @Override
