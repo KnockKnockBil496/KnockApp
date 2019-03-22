@@ -16,7 +16,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
     ImageView foto;
     StorageReference mStorage;
     ProgressDialog mProgressDialog;
+    Switch awayFromHome;
+    String r;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +108,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        awayFromHome=(Switch)findViewById(R.id.awayHome);
+        awayFromHome.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    r = "true";
+                }
+                else {
+                    r = "false";
+                }
+            }
+        });
+
         // gelenleri izlemek için kamerayı aç
         watchPeople=findViewById(R.id.videoCamera);
         watchPeople.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, OPEN_CAMERA);*/
 
                 Intent swap = new Intent(MainActivity.this, RecognizeActivity.class);
+
+                swap.putExtra("Ans1",r);
                 startActivity(swap);
 
 
@@ -127,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
                 speakNameFunc();
             }
         });
+
+
     }
 
 
@@ -189,5 +211,4 @@ public class MainActivity extends AppCompatActivity {
         cursor.close();
         return res;
     }
-
 }

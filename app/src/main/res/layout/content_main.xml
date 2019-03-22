@@ -73,15 +73,22 @@
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteY="446dp" />
 
+        <Switch
+            android:id="@+id/awayHome"
+            android:layout_width="203dp"
+            android:layout_height="52dp"
+            android:text="Away From Home"
+            android:checked="false" />
+
         <Button
             android:id="@+id/textToSpeech"
-            android:layout_width="398dp"
-            android:layout_height="70dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="10dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/shape"
             android:text="Text To Speech"
             android:textSize="26sp"
@@ -89,7 +96,8 @@
             android:typeface="sans"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="MissingConstraints"
-            tools:layout_editor_absoluteY="446dp" />
+            tools:layout_editor_absoluteY="446dp"
+            tools:visibility="visible" />
 
         <Button
             android:id="@+id/videoCamera"

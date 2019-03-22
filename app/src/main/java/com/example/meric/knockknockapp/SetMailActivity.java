@@ -35,7 +35,8 @@ public class SetMailActivity extends AppCompatActivity {
         getMailBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getEmailFunc();
+
+//                getEmailFunc();
                 sendEmail();
             }
         });
@@ -65,20 +66,21 @@ public class SetMailActivity extends AppCompatActivity {
             // permissions this app might request
         }
     }
-    public void getEmailFunc() {
-        EditText text = (EditText)findViewById(R.id.textEmailSetter) ;
-        MainActivity.emailAdress = text.getText().toString();
 
-        int duration = Toast.LENGTH_SHORT;
-        Context context = getApplicationContext();
-
-        Toast toast = Toast.makeText(context, MainActivity.emailAdress, duration);
-        toast.show();
-    }
+//    public void getEmailFunc() {
+//        EditText text = (EditText)findViewById(R.id.textEmailSetter) ;
+//        MainActivity.emailAdress = text.getText().toString();
+//
+//        int duration = Toast.LENGTH_SHORT;
+//        Context context = getApplicationContext();
+//
+//        Toast toast = Toast.makeText(context, MainActivity.emailAdress, duration);
+//        toast.show();
+//    }
 
     public void sendEmail() {
         //Creating SendMail object
-        MailSend sm = new MailSend(this, "knockknockapplication@gmail.com", "Knock Knock App Daily Summary", "Here are your visitors today.");
+        MailSend sm = new MailSend(this, "knockknockapplication@gmail.com", "Knock Knock App Daily Summary", "Here are your visitors today.", "false");
 
         //Executing sendmail to send email
         sm.execute();

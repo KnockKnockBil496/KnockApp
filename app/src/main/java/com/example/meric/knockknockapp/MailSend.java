@@ -3,7 +3,12 @@ package com.example.meric.knockknockapp;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.widget.Toast;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -30,34 +35,47 @@ public class MailSend extends AsyncTask<Void,Void,Void> {
     //Information to send email
     private String email;
     private String subject;
-    private String message1;
-
+    private String message1 = "Visitors Today: \n";
+    private String awayFromHome = "";
+    private boolean dialogShower = true;
     //Progressdialog to show while sending email
     private ProgressDialog progressDialog;
 
     //Class Constructor
-    public MailSend(Context context, String email, String subject, String message) {
+    public MailSend(Context context, String email, String subject, String message, String awayFromHome) {
         //Initializing variables
         this.context = context;
         this.email = email;
         this.subject = subject;
         this.message1 = message;
+        this.awayFromHome = awayFromHome;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         //Showing progress dialog while sending email
-        progressDialog = ProgressDialog.show(context, "Sending message", "Please wait...", false, false);
+        if(awayFromHome.equals("true"))
+            Toast.makeText(context, "Mail Sent", Toast.LENGTH_LONG).show();
+        else {
+            dialogShower = true;
+            progressDialog = ProgressDialog.show(context, "Sending message", "Please wait...", false, false);
+        }
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         //Dismissing the progress dialog
-        progressDialog.dismiss();
-        //Showing a success message
-        Toast.makeText(context, "Message Sent", Toast.LENGTH_LONG).show();
+        if(awayFromHome.equals("false")){
+            if (dialogShower == true){
+                progressDialog.dismiss();
+                dialogShower = false;
+            }
+        }
+        else
+            if(dialogShower == false)
+                Toast.makeText(context, "Message Sent", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -91,20 +109,86 @@ public class MailSend extends AsyncTask<Void,Void,Void> {
 
             BodyPart messageBodyPart = new MimeBodyPart();
 
-            messageBodyPart.setText(message1);
-
             Multipart multipart = new MimeMultipart();
 
-            multipart.addBodyPart(messageBodyPart);
+            File folder = new File( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/");
+            File[] filename = folder.listFiles();
 
-            messageBodyPart = new MimeBodyPart();
+            int personFound = findPerson(message1);
 
-            String filename = "/storage/emulated/0/DCIM/Camera/1396863284629.jpg";  //change here to, change the file that has been sent
-            DataSource source = new FileDataSource(filename);
-            messageBodyPart.setDataHandler(new DataHandler(source));
-            messageBodyPart.setFileName(filename);
+            if(filename.length == 2)
+                Toast.makeText(context, "No visitors today...", Toast.LENGTH_LONG).show();
 
-            multipart.addBodyPart(messageBodyPart);
+            for (int k = 0; k < filename.length; k++){
+                if (filename[k].toString().endsWith(".jpg")) {
+                    if(awayFromHome.equals("true") && personFound != -1){
+                        String detail = filename[personFound].toString().substring(filename[personFound].getPath().lastIndexOf('/') + 3, filename[personFound].toString().length() - 4);
+
+                        String[] arrOfStr = detail.split("_");
+                        String date = arrOfStr[0];
+                        String time = arrOfStr[1];
+                        String name = arrOfStr[2];
+                        String year = date.substring(0, 2);
+                        String mh = date.substring(2, 4);
+                        String dt = date.substring(4, 6);
+                        date = dt + "." + mh + "." + year;
+
+                        String hour = time.substring(0, 2);
+                        String min = time.substring(2, 4);
+                        String sec = time.substring(4, 6);
+                        time = hour + ":" + min + ":" + sec;
+
+                        message1 = "Date: " + date + " " + "Time: " + time + " Name: " + name + " \n";
+                        break;
+                    }
+
+                    String detail = filename[k].toString().substring(filename[k].getPath().lastIndexOf('/') + 3, filename[k].toString().length() - 4);
+
+                    String[] arrOfStr = detail.split("_");
+                    String date = arrOfStr[0];
+                    String time = arrOfStr[1];
+                    String name = arrOfStr[2];
+                    String year = date.substring(0, 2);
+                    String mh = date.substring(2, 4);
+                    String dt = date.substring(4, 6);
+                    date = dt + "." + mh + "." + year;
+
+                    String hour = time.substring(0, 2);
+                    String min = time.substring(2, 4);
+                    String sec = time.substring(4, 6);
+                    time = hour + ":" + min + ":" + sec;
+
+                    message1 += "Date: " + date + " " + "Time: " + time + " Name: " + name + " \n";
+                }
+            }
+
+            messageBodyPart.setText(message1);
+
+            for (int k = 0; k < filename.length; k++){
+                if (filename[k].toString().endsWith(".jpg")) {
+                    if(awayFromHome.equals("true") && personFound != -1) {
+                        multipart.addBodyPart(messageBodyPart);
+
+                        messageBodyPart = new MimeBodyPart();
+
+                        DataSource source = new FileDataSource(filename[k].toString());
+                        messageBodyPart.setDataHandler(new DataHandler(source));
+                        messageBodyPart.setFileName(filename[personFound].toString());
+
+                        multipart.addBodyPart(messageBodyPart);
+                        break;
+                    }
+                    multipart.addBodyPart(messageBodyPart);
+
+                    messageBodyPart = new MimeBodyPart();
+
+                    DataSource source = new FileDataSource(filename[k].toString());
+                    messageBodyPart.setDataHandler(new DataHandler(source));
+                    messageBodyPart.setFileName(filename[k].toString());
+
+                    multipart.addBodyPart(messageBodyPart);
+                }
+            }
 
             message.setContent(multipart);
 
@@ -115,5 +199,33 @@ public class MailSend extends AsyncTask<Void,Void,Void> {
         }
 
         return null;
+    }
+
+    public int findPerson(String name) {
+        File folder = new File( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/");
+        File[] filename = folder.listFiles();
+
+        String date = getCurrentTimeUsingDate();
+
+        for(int i = 0; i<filename.length;i++){
+            if(filename[i].toString().contains(name))
+                return i;
+        }
+
+        return -1;
+
+    }
+    public String getCurrentTimeUsingDate() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+        String[] arrOfStr = timeStamp.split("_");
+        String date = arrOfStr[0];
+        String time = arrOfStr[1];
+
+        String year = date.substring(0, 2);
+        String mh = date.substring(2, 4);
+        String dt = date.substring(4, 6);
+        date = dt + "" + mh + "" + year;
+        return date;
     }
 }

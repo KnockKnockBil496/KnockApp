@@ -71,7 +71,7 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
     String personName="";
     String dir ="";
     String storePerson="";
-
+    String awayFromHome="false";
 
 
     private BaseLoaderCallback callbackLoader = new BaseLoaderCallback(this) {
@@ -149,6 +149,7 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
             }
 
             if (label[0] != -1 && (int) predict[0] < 125) {
+
                 Toast.makeText(getApplicationContext(), "Hello " +/*imagesLabels.get(label.length - 1)*/name, Toast.LENGTH_SHORT).show();
                 personName = name;
                 speakWords("Hello" + personName);
@@ -173,7 +174,12 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
             stopper = false;
             storePerson = getCurrentTimeUsingDate() + "_" + personName;
             storeScreenshot(bitmap, storePerson);
+            if(awayFromHome.equals("true")){
+                MailSend sm = new MailSend(this, "knockknockapplication@gmail.com", "Knock Knock App Visitor", personName, awayFromHome);
 
+                //Executing sendmail to send email
+                sm.execute();
+            }
         }
     }
 
@@ -209,6 +215,15 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
         openCVCamera.setCvCameraViewListener(this);
         local = new Storage(this);
 
+        Intent intent = getIntent();
+
+        String s1 =(String) intent.getStringExtra("Ans1");
+
+
+        if(s1.equals("true"))
+            awayFromHome = "true";
+        else
+            awayFromHome = "false";
 
 //        // Here, we are making a folder named picFolder to store
 //        // pics taken by the camera using this application.
