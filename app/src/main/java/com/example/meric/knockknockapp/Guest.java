@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -25,7 +26,7 @@ import java.io.IOException;
 public class Guest extends AppCompatActivity {
 
     Button goruntule;
-    EditText dosya;
+    TextView dosya;
     ImageView foto;
     final int GALERY_INTENT=1;
     StorageReference mStorage;
@@ -63,14 +64,13 @@ public class Guest extends AppCompatActivity {
 
                     Uri selectedImage = data.getData();
                     dosya=findViewById(R.id.GuestDetail);
-                    String detail= selectedImage.getPath().substring(selectedImage.getPath().lastIndexOf('/')+1);
 
                     //tarihnde _// saatinde _// _aybike aydemir geldi
 
 
 
 
-                    dosya.setText(detail);
+
                     String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
                     Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
@@ -81,6 +81,22 @@ public class Guest extends AppCompatActivity {
                     imgDecodableString = cursor.getString(columnIndex);
 
                     cursor.close();
+            String detail= imgDecodableString.toString().substring(selectedImage.getPath().lastIndexOf('/')+3,imgDecodableString.length()-4);
+            String[] arrOfStr = detail.split("_");
+            String date =arrOfStr[0];
+            String time=arrOfStr[1];
+            String name=arrOfStr[2];
+            String year=date.substring(0,4);
+            String mh=date.substring(4,6);
+            String  dt = date.substring(6,8);
+            date =dt+"."+mh+"."+year;
+
+            String hour = time.substring(0,2);
+            String min=time.substring(2,4);
+            String sec = time.substring(4,6);
+            time= hour+":"+min+":"+sec;
+            dosya.setText(date+" "+" tarihinde " + "saat " + time +" "+name+" geldi.");
+
 
                      foto = (ImageView) findViewById(R.id.imageViewGuest);
 
@@ -95,8 +111,8 @@ public class Guest extends AppCompatActivity {
             filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(Guest.this,"Upload is Done!",Toast.LENGTH_LONG).show();
-                    mProgressDialog.dismiss();
+                   // Toast.makeText(Guest.this,"Upload is Done!",Toast.LENGTH_LONG).show();
+                 //   mProgressDialog.dismiss();
                     uploadDone = true;
                 }
             });

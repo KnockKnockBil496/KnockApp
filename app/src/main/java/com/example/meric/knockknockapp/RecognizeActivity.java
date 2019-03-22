@@ -209,9 +209,9 @@ public class RecognizeActivity extends AppCompatActivity implements CameraBridge
 
 //        // Here, we are making a folder named picFolder to store
 //        // pics taken by the camera using this application.
-        dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/Misafirlerim/";
-        File newdir = new File(dir);
-        newdir.mkdirs();
+        dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/";
+       // File newdir = new File(dir);
+     //   newdir.mkdirs();
 
 //                String file = dir + personName + ".jpg";
 //                File newfile = new File(file);

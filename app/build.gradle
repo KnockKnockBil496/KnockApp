@@ -38,10 +38,8 @@ dependencies {
     // compile 'com.android.support:appcompat-v7:22.0.0'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.android.gms:play-services:12.0.1'
-    compile project(':openCVLibrary400pre')
+     compile project(':openCVLibrary400pre')
     implementation 'com.facebook.stetho:stetho:1.5.0'
-
-
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:support-annotations:27.1.1'
     testImplementation 'junit:junit:4.12'
